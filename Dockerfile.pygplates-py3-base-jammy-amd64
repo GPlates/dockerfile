@@ -1,0 +1,20 @@
+# docker build -f Dockerfile.pygplates-py3-base-jammy-amd64 -t gplates/pygplates-py3-base .
+
+FROM ubuntu:jammy
+MAINTAINER Michael Chin
+
+#Install ubuntu libraires and packages
+RUN apt-get update -y
+RUN apt-get -y install python3 wget python3-pip
+
+RUN pip3 install numpy
+
+#Download pygplates and install it
+#install pygplates
+RUN wget https://www.earthbyte.org/download/9079/ -O /pygplates_0.36.0_py310_ubuntu-22.04.deb
+RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+RUN apt-get install -y /pygplates_0.36.0_py310_ubuntu-22.04.deb
+RUN rm /pygplates_0.36.0_py310_ubuntu-22.04.deb
+
+#Set the path so python can find pygplates
+ENV PYTHONPATH ${PYTHONPATH}:/usr/lib:/usr/lib/pygplates/revision36/

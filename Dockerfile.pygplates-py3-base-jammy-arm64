@@ -1,0 +1,25 @@
+# docker build --platform linux/arm64 -f Dockerfile.pygplates-py3-base-jammy-arm64 -t gplates/pygplates-py3-base:jammy.arm64 .
+# docker run --rm -ti --platform linux/arm64 gplates/pygplates-py3-base:jammy.arm64
+
+# if you build this docker image on an amd64 ubuntu host, you need 
+# "sudo apt-get install qemu binfmt-support qemu-user-static" # Install the qemu packages
+# "docker run --rm --privileged multiarch/qemu-user-static --reset -p yes" # This step will execute the registering scripts
+
+FROM arm64v8/ubuntu:22.04
+MAINTAINER Michael Chin
+
+#Install ubuntu libraires and packages
+RUN apt-get update -y
+RUN apt-get -y install python3 wget python3-pip
+
+RUN pip3 install numpy
+
+#Download pygplates and install it
+#install pygplates
+RUN wget https://www.earthbyte.org/download/9316/ -O /pygplates_0.36.0_py310_ubuntu-22.04.deb
+RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+RUN apt-get install -y /pygplates_0.36.0_py310_ubuntu-22.04.deb
+RUN rm /pygplates_0.36.0_py310_ubuntu-22.04.deb
+
+#Set the path so python can find pygplates
+ENV PYTHONPATH ${PYTHONPATH}:/usr/lib:/usr/lib/pygplates/revision36/
