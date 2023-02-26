@@ -1,0 +1,20 @@
+# docker build -f Dockerfile.pygmt-amd64 -t gplates/pygmt:jammy.amd64 .
+# docker run --rm -ti -p 8888:8888 -v `pwd`:/home/workspace gplates/pygmt:jammy.amd64
+
+from gplates/pygplates-py3-base:jammy.amd64
+
+RUN apt-get update -y
+RUN apt-get install -y wget gdal-bin libgdal-dev
+
+RUN pip install pygmt[all]
+
+RUN apt-get install -y gmt
+RUN ln -s /usr/lib/x86_64-linux-gnu/libgmt.so.6.3.0 /usr/lib/x86_64-linux-gnu/libgmt.so
+RUN pip install jupyter
+
+EXPOSE 8888
+
+RUN mkdir /workspace 
+WORKDIR /workspace
+
+CMD /bin/bash -c "jupyter notebook --allow-root --ip=0.0.0.0 --no-browser"
